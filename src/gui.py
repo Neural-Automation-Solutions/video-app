@@ -1,6 +1,8 @@
 from enum import Enum
 from tkinter import Tk, Button, Label, Frame, LEFT, RIGHT, TOP
 
+from .camera import Camera
+
 class CameraStatus(Enum):
     '''
     Camera Status ENUM
@@ -28,8 +30,10 @@ class GUI(Tk):
 
     status: CameraStatus = CameraStatus.IDLE
 
-    def __init__ (self):
+    def __init__ (self, cam: Camera):
         super().__init__()
+
+        self.cam = cam
 
         # build gui
 
@@ -53,6 +57,7 @@ class GUI(Tk):
         self.status = CameraStatus.INACTIVE
         
         # stop camera from recording
+        self.cam.stop_recording()
 
         self._update_label()
 
@@ -60,12 +65,14 @@ class GUI(Tk):
         self.status = CameraStatus.ACTIVE
 
         # resume recording on camera
+        self.cam.start_recording()
 
         self._update_label()
 
     def _update_label (self) -> None:
         self.frame.statusLabel.config(text=f"CAMERA STATUS: {self.status.name}")
 
-gui = GUI()
-gui.mainloop()
-
+if __name__ == '__main__':
+    cam = Camera('.')
+    gui = GUI(cam)
+    gui.mainloop()
