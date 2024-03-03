@@ -31,9 +31,6 @@ class Camera (Picamera2):
         self.action = CameraAction.IDLE
         self._encoder = H264Encoder(10000000)
 
-        #config = self.create_video_configuration()
-        #self.configure(config)
-
     def start_recording (self) -> None:
         if self.action == CameraAction.RECORDING:
             raise 'Already Recording'

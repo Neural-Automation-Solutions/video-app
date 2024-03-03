@@ -1,7 +1,7 @@
 from enum import Enum
 from tkinter import Tk, Button, Label, Frame, LEFT, RIGHT, TOP
 
-from .camera import Camera
+from .camera import Camera, CameraAction
 
 class CameraStatus(Enum):
     '''
@@ -45,8 +45,14 @@ class GUI(Tk):
         self.frame.statusLabel = Label(text=f"CAMERA STATUS: {self.status.name}")
         self.frame.statusLabel.pack(side=TOP)
 
-        self.frame.resume = Button(text="Resume", command=self.resume_recording)
+        self.frame.modeLabel = Label(text=f"CAMERA MODE: {self.cam.action.name}")
+        self.frame.modeLabel.pack(side=TOP)
+
+        self.frame.resume = Button(text="Start", command=self.resume_recording)
         self.frame.resume.pack(side=LEFT, padx=45)
+
+        self.frame.preview = Button(text="Preview", command=self.preview)
+        self.frame.preview.pack(side=LEFT, padx=45)
 
         self.frame.stop = Button(text="Stop", command=self.stop_recording)
         self.frame.stop.pack(side=RIGHT, padx=45)
@@ -57,9 +63,12 @@ class GUI(Tk):
         self.status = CameraStatus.INACTIVE
         
         # stop camera from recording
-        self.cam.stop_recording()
+        if self.cam.action == CameraAction.RECORDING:
+            self.cam.stop_recording()
+        elif self.cam.action == CameraAction.PREVIEW:
+            self.cam.stop_preview()
 
-        self._update_label()
+        self._update_labels()
 
     def resume_recording (self) -> None:
         self.status = CameraStatus.ACTIVE
@@ -67,9 +76,18 @@ class GUI(Tk):
         # resume recording on camera
         self.cam.start_recording()
 
-        self._update_label()
+        self._update_labels()
 
-    def _update_label (self) -> None:
+    def preview (self) -> None:
+        self.status = CameraStatus.ACTIVE
+
+        # show a preview of the live feed
+        self.cam._start_preview()
+
+        self._update_labels()
+
+    def _update_labels (self) -> None:
+        self.frame.modeLabel.config(text=f"CAMERA MODE: {self.cam.action.name}")
         self.frame.statusLabel.config(text=f"CAMERA STATUS: {self.status.name}")
 
 if __name__ == '__main__':
