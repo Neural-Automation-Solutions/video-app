@@ -66,7 +66,7 @@ class Camera (Picamera2):
         config = self.create_preview_configuration()
         self.configure(config)
 
-        super().start_preview(Preview.QTGL)
+        super().start_preview(Preview.QT)
         self.start()
 
     def stop_preview (self) -> None:
